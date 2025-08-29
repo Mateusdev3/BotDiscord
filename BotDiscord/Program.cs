@@ -13,10 +13,8 @@ class Program
     private DiscordSocketClient _client;
     private InteractionService _interactionService;
     private IServiceProvider _services;
-
-    private static readonly string Token = "MTIxNzgzODg4NDE5Nzc2MTA3NA.GkTIQR.D_A941c2NKRGJJhwUeivV__A4Wub_QUXauawys"; // ⚠️ nunca exponha seu token em público!
-    public static readonly ulong ChannelId = 1402103538833686598; // ID do canal de status
-
+    private static readonly string Token = "";
+    public static readonly ulong ChannelId = 1402103538833686598; 
     public static Program Instance { get; private set; }
 
     public Program()
@@ -41,14 +39,11 @@ class Program
             .AddSingleton(_client)
             .AddSingleton(new InteractionService(_client.Rest))
             .BuildServiceProvider();
-
         _interactionService = _services.GetRequiredService<InteractionService>();
-
         _client.Log += LogAsync;
         _client.Ready += ReadyAsync;
         _client.InteractionCreated += HandleInteraction;
-        _client.MessageReceived += StatusUpdateOnMessageAsync; // Atualiza status com mensagens novas
-
+        _client.MessageReceived += StatusUpdateOnMessageAsync;
         await _client.LoginAsync(TokenType.Bot, Token);
         await _client.StartAsync();
 
@@ -64,14 +59,8 @@ class Program
     private async Task ReadyAsync()
     {
         Console.WriteLine($"{_client.CurrentUser} está online!");
-
-        // Registra os comandos Slash
         await _interactionService.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
-
-        // Registra no servidor específico (instantâneo)
-        await _interactionService.RegisterCommandsToGuildAsync(1394412758115811491); // coloque o ID do seu servidor
-
-        // Atualiza status inicial
+        await _interactionService.RegisterCommandsToGuildAsync(1394412758115811491);
         int players = await GetPlayersFromChannel();
         await UpdateBotStatus(players);
     }
@@ -167,7 +156,7 @@ public class CommandsModule : InteractionModuleBase<SocketInteractionContext>
     [SlashCommand("ping", "Mostra o ping do bot")]
     public async Task PingAsync()
     {
-        await RespondAsync("Pong!", ephemeral: true); // resposta só visível pra quem usou
+        await RespondAsync("Pong!", ephemeral: true); 
     }
 
     [SlashCommand("players", "Mostra jogadores online")]
